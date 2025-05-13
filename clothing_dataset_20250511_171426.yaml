@@ -1,0 +1,14 @@
+names:
+  0: Dress
+  1: Hoodie
+  2: Dress Shirt
+  3: Shorts
+  4: Skirt
+  5: Shirt
+  6: Pants
+  7: Jacket
+nc: 8
+path: datasets\Fashion-Detection-(Bounding-Box)-1
+test: datasets\Fashion-Detection-(Bounding-Box)-1\test\images
+train: datasets\Fashion-Detection-(Bounding-Box)-1\train\images
+val: datasets\Fashion-Detection-(Bounding-Box)-1\valid\images

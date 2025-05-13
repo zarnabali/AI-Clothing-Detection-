@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Clothing Detection</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: #f0f2f5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .navbar {
+            background: #ffffff;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .navbar h1 {
+            color: #1a73e8;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            flex: 1;
+        }
+
+        .card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .upload-area {
+            border: 2px dashed #1a73e8;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .upload-area:hover {
+            background: #f8f9fa;
+        }
+
+        .upload-area i {
+            font-size: 3rem;
+            color: #1a73e8;
+            margin-bottom: 1rem;
+        }
+
+        .upload-area p {
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .btn {
+            background: #1a73e8;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #1557b0;
+        }
+
+        .btn-secondary {
+            background: #5f6368;
+        }
+
+        .btn-secondary:hover {
+            background: #3c4043;
+        }
+
+        .result-area {
+            display: none;
+            margin-top: 2rem;
+        }
+
+        .image-container {
+            position: relative;
+            margin-bottom: 1rem;
+        }
+
+        .download-btn {
+            position: absolute;
+            bottom: 1rem;
+            right: 1rem;
+            background: rgba(26, 115, 232, 0.9);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .download-btn:hover {
+            background: rgba(26, 115, 232, 1);
+        }
+
+        .result-image {
+            max-width: 100%;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .detection-list {
+            list-style: none;
+        }
+
+        .detection-item {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .detection-item span {
+            color: #1a73e8;
+            font-weight: 500;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 2rem;
+            height: 2rem;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #1a73e8;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            color: #d93025;
+            background: #fce8e6;
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+            display: none;
+        }
+
+        .menu {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .menu-item {
+            flex: 1;
+            text-align: center;
+            padding: 1rem;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .menu-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .menu-item i {
+            font-size: 2rem;
+            color: #1a73e8;
+            margin-bottom: 0.5rem;
+        }
+
+        .menu-item h3 {
+            color: #202124;
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .menu-item p {
+            color: #5f6368;
+            font-size: 0.9rem;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <h1>AI Clothing Detection</h1>
+    </nav>
+
+    <div class="container">
+        <div class="menu">
+            <div class="menu-item" onclick="window.location.href='/'">
+                <i class="fas fa-image"></i>
+                <h3>Image Upload</h3>
+                <p>Upload and analyze images</p>
+            </div>
+            <div class="menu-item" onclick="window.location.href='/webcam'">
+                <i class="fas fa-camera"></i>
+                <h3>Live Detection</h3>
+                <p>Real-time webcam detection</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="upload-area" id="dropZone">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p>Drag and drop an image here or click to select</p>
+                <input type="file" id="fileInput" accept="image/*" style="display: none;">
+                <button class="btn" onclick="document.getElementById('fileInput').click()">Select Image</button>
+            </div>
+
+            <div class="loading" id="loading">
+                Processing image...
+            </div>
+
+            <div class="error" id="error"></div>
+
+            <div class="result-area" id="resultArea">
+                <div class="image-container">
+                    <img id="resultImage" class="result-image" src="" alt="Detection Result">
+                    <button class="btn download-btn" id="downloadBtn" style="display: none;">
+                        <i class="fas fa-download"></i> Download Image
+                    </button>
+                </div>
+                <h3>Detection Results:</h3>
+                <ul class="detection-list" id="detectionList"></ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const loading = document.getElementById('loading');
+        const error = document.getElementById('error');
+        const resultArea = document.getElementById('resultArea');
+        const resultImage = document.getElementById('resultImage');
+        const detectionList = document.getElementById('detectionList');
+
+        // Handle drag and drop
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.style.borderColor = '#1557b0';
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.style.borderColor = '#1a73e8';
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.style.borderColor = '#1a73e8';
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) {
+                handleFile(file);
+            }
+        });
+
+        // Handle file selection
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        });
+
+        function handleFile(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            // Show loading, hide error and results
+            loading.style.display = 'block';
+            error.style.display = 'none';
+            resultArea.style.display = 'none';
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                loading.style.display = 'none';
+                
+                if (data.error) {
+                    error.textContent = data.error;
+                    error.style.display = 'block';
+                    return;
+                }
+
+                // Display results
+                resultImage.src = data.image_path;
+                detectionList.innerHTML = '';
+                
+                // Show download button
+                const downloadBtn = document.getElementById('downloadBtn');
+                downloadBtn.style.display = 'flex';
+                downloadBtn.onclick = () => {
+                    const link = document.createElement('a');
+                    link.href = data.image_path;
+                    link.download = 'detected_image.jpg';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                };
+                
+                data.detections.forEach(detection => {
+                    const li = document.createElement('li');
+                    li.className = 'detection-item';
+                    li.innerHTML = `
+                        <div>
+                            <strong>${detection.class}</strong>
+                            <span>${detection.color}</span>
+                        </div>
+                        <div>Confidence: ${detection.confidence}</div>
+                    `;
+                    detectionList.appendChild(li);
+                });
+
+                resultArea.style.display = 'block';
+            })
+            .catch(err => {
+                loading.style.display = 'none';
+                error.textContent = 'An error occurred while processing the image.';
+                error.style.display = 'block';
+            });
+        }
+    </script>
+</body>
+</html> 

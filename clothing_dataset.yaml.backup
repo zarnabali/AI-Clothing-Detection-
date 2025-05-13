@@ -1,0 +1,8 @@
+names:
+  0: upper_clothes
+  1: lower_clothes
+  2: shoes
+path: D:/Pyhton AI/Clothing_Detection_Model/datasets/Fashion-Detection-(Bounding-Box)-1
+test: D:/Pyhton AI/Clothing_Detection_Model/datasets/Fashion-Detection-(Bounding-Box)-1/test/images
+train: D:/Pyhton AI/Clothing_Detection_Model/datasets/Fashion-Detection-(Bounding-Box)-1/train/images
+val: D:/Pyhton AI/Clothing_Detection_Model/datasets/Fashion-Detection-(Bounding-Box)-1/valid/images
